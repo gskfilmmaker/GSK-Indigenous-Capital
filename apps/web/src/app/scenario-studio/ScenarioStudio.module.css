@@ -1,0 +1,121 @@
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--gsk-space-6) var(--gsk-space-5) var(--gsk-space-8);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--gsk-space-3);
+  margin-bottom: var(--gsk-space-4);
+}
+
+.title {
+  font-family: var(--gsk-font-display);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--gsk-color-ink);
+  margin: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: var(--gsk-space-6);
+  margin-top: var(--gsk-space-6);
+}
+
+/* Grid items default to min-width: auto, sized by their content's
+   intrinsic minimum — a long unbroken input value can then force a
+   column wider than its `minmax(0, ...)` track and overflow into the
+   next column instead of respecting it. min-width: 0 here is what
+   actually makes that clamp effective. */
+.layout > section {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sectionTitle {
+  font-family: var(--gsk-font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gsk-color-ink);
+  margin: var(--gsk-space-6) 0 var(--gsk-space-2);
+}
+
+.sectionTitle:first-child {
+  margin-top: 0;
+}
+
+.sectionHint {
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+  color: var(--gsk-color-ink-faint);
+  margin: 0 0 var(--gsk-space-4);
+}
+
+.existingCapGrid {
+  display: grid;
+  gap: var(--gsk-space-3);
+}
+
+.addButton {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gsk-color-accent);
+  background: transparent;
+  border: 1px dashed var(--gsk-color-line-strong);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-3);
+  width: 100%;
+  cursor: pointer;
+}
+
+.addButton:hover {
+  border-color: var(--gsk-color-accent);
+}
+
+.results > * + * {
+  margin-top: var(--gsk-space-6);
+}
+
+.errorList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gsk-space-2);
+}
+
+.errorItem {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-state-block);
+  background: var(--gsk-color-state-block-tint);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-3);
+  margin: 0;
+}
+
+.emptyState {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink-faint);
+}
+
+.versionFooter {
+  font-family: var(--gsk-font-mono);
+  font-size: 12px;
+  color: var(--gsk-color-ink-faint);
+  margin-top: var(--gsk-space-7);
+  padding-top: var(--gsk-space-4);
+  border-top: 1px solid var(--gsk-color-line);
+}

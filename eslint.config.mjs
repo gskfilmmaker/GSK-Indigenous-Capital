@@ -23,6 +23,13 @@ export default tseslint.config(
       // Next.js-generated; "This file should not be edited" per its own
       // header, and its content is rewritten by `next build`/`next dev`.
       "**/next-env.d.ts",
+      // Plain Node build-tooling scripts (e.g. packages/ui/scripts/copy-
+      // css.mjs) aren't covered by any package's tsconfig.json "include"
+      // (they're .mjs, not .ts/.tsx app source), so typed linting via
+      // projectService can't resolve a project for them — same "tooling,
+      // not application code" reasoning as this config file's own
+      // self-exclusion above.
+      "**/scripts/**/*.mjs",
     ],
   },
   js.configs.recommended,

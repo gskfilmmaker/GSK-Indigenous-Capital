@@ -13,7 +13,7 @@
     "./tokens.css": "./src/tokens/tokens.css"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-css.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:axe": "vitest run a11y",

@@ -24,18 +24,29 @@ export const decimalStringSchema = z
   );
 export type DecimalString = z.infer<typeof decimalStringSchema>;
 
+// Every `.refine()` below re-checks `decimalPattern` itself, short-circuiting
+// before constructing a `Decimal`, rather than trusting that
+// `decimalStringSchema`'s own `.regex()` check already rejected a bad value.
+// Zod does not abort a chain of checks after a non-fatal failure (`.regex()`
+// has no `fatal` option in Zod v3) — a `.refine()` chained after it still
+// receives and runs its predicate against the original, regex-failing
+// value. Without this guard, an incomplete or empty string (completely
+// normal mid-keystroke input from a live form) reaches `new Decimal(...)`,
+// which throws a raw `DecimalError` instead of a clean Zod validation
+// issue.
 export const nonNegativeDecimalStringSchema = decimalStringSchema.refine(
-  (value) => new Decimal(value).gte(0),
+  (value) => decimalPattern.test(value) && new Decimal(value).gte(0),
   "must not be negative",
 );
 
 export const positiveDecimalStringSchema = decimalStringSchema.refine(
-  (value) => new Decimal(value).gt(0),
+  (value) => decimalPattern.test(value) && new Decimal(value).gt(0),
   "must be greater than zero",
 );
 
 /** A decimal string in [0, 1], e.g. `"0.90"` for 90%. */
 export const percentStringSchema = decimalStringSchema.refine((value) => {
+  if (!decimalPattern.test(value)) return false;
   const parsed = new Decimal(value);
   return parsed.gte(0) && parsed.lte(1);
 }, 'must be a decimal between 0 and 1 (e.g. "0.90" for 90%)');

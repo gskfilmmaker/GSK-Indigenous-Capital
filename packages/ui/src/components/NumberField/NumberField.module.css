@@ -3,6 +3,14 @@
   flex-direction: column;
   gap: var(--gsk-space-1);
   font-family: var(--gsk-font-body);
+  /* A flex/grid item defaults to min-width: auto, sized by its content's
+     intrinsic minimum. When this component is placed directly inside a
+     CSS Grid (a common layout for a form of several NumberFields), an
+     unbroken value like a long number can force this item — and its
+     whole grid track — wider than intended, overflowing into the next
+     column. min-width: 0 is what makes the parent grid's own track
+     sizing (e.g. minmax(0, ...)) actually take effect. */
+  min-width: 0;
 }
 
 .label {

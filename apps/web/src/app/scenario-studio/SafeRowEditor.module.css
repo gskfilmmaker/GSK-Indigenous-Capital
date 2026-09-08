@@ -1,0 +1,94 @@
+.row {
+  border: 1px solid var(--gsk-color-line);
+  border-radius: var(--gsk-radius-sm);
+  background: var(--gsk-color-paper-raised);
+  padding: var(--gsk-space-4);
+  margin-bottom: var(--gsk-space-4);
+}
+
+.rowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gsk-space-3);
+  margin-bottom: var(--gsk-space-3);
+}
+
+.rowTitle {
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gsk-color-ink-soft);
+  margin: 0;
+}
+
+.rowControls {
+  display: flex;
+  gap: var(--gsk-space-2);
+}
+
+.iconButton {
+  font-family: var(--gsk-font-mono);
+  font-size: 12px;
+  color: var(--gsk-color-ink-soft);
+  background: var(--gsk-color-paper);
+  border: 1px solid var(--gsk-color-line-strong);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-1) var(--gsk-space-2);
+  cursor: pointer;
+}
+
+.iconButton:hover:not(:disabled) {
+  color: var(--gsk-color-ink);
+  border-color: var(--gsk-color-ink);
+}
+
+.iconButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.removeButton {
+  composes: iconButton;
+  color: var(--gsk-color-state-block);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gsk-space-3) var(--gsk-space-4);
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gsk-space-1);
+  /* Same min-width: auto overflow fix as .layout > section in
+     ScenarioStudio.module.css — a NumberField's input can otherwise force
+     this grid item (and this fieldset's whole row/column) wider than its
+     track. */
+  min-width: 0;
+}
+
+.label {
+  font-family: var(--gsk-font-body);
+  font-size: 12px;
+  color: var(--gsk-color-ink-soft);
+}
+
+.textInput,
+.select {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink);
+  background: var(--gsk-color-paper);
+  border: 1px solid var(--gsk-color-line-strong);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-2) var(--gsk-space-3);
+}

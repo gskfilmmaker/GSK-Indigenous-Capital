@@ -27,12 +27,33 @@ describe("positiveDecimalStringSchema", () => {
     expect(positiveDecimalStringSchema.safeParse("-1").success).toBe(false);
     expect(positiveDecimalStringSchema.safeParse("0.01").success).toBe(true);
   });
+
+  // Regression: Zod does not abort a `.refine()` chain after an earlier
+  // non-fatal check (`.regex()`) already failed — the refine predicate
+  // still runs against the original, regex-failing value. A predicate
+  // that unconditionally does `new Decimal(value)` then throws a raw
+  // decimal.js error instead of `safeParse` returning `{success: false}`,
+  // which defeats the point of "safe"Parse. This is exactly the input
+  // shape a live form field has mid-keystroke (empty, a bare "-", a
+  // trailing "."), so it must not throw.
+  it("returns a failed parse, not a thrown error, for input that fails the underlying decimal pattern", () => {
+    expect(() => positiveDecimalStringSchema.safeParse("")).not.toThrow();
+    expect(positiveDecimalStringSchema.safeParse("").success).toBe(false);
+    expect(() => positiveDecimalStringSchema.safeParse("-")).not.toThrow();
+    expect(positiveDecimalStringSchema.safeParse("-").success).toBe(false);
+    expect(() => positiveDecimalStringSchema.safeParse("12.")).not.toThrow();
+  });
 });
 
 describe("nonNegativeDecimalStringSchema", () => {
   it("accepts zero but rejects negative values", () => {
     expect(nonNegativeDecimalStringSchema.safeParse("0").success).toBe(true);
     expect(nonNegativeDecimalStringSchema.safeParse("-0.01").success).toBe(false);
+  });
+
+  it("returns a failed parse, not a thrown error, for input that fails the underlying decimal pattern", () => {
+    expect(() => nonNegativeDecimalStringSchema.safeParse("")).not.toThrow();
+    expect(nonNegativeDecimalStringSchema.safeParse("").success).toBe(false);
   });
 });
 
@@ -46,5 +67,10 @@ describe("percentStringSchema", () => {
   it("rejects values outside [0, 1]", () => {
     expect(percentStringSchema.safeParse("1.01").success).toBe(false);
     expect(percentStringSchema.safeParse("-0.01").success).toBe(false);
+  });
+
+  it("returns a failed parse, not a thrown error, for input that fails the underlying decimal pattern", () => {
+    expect(() => percentStringSchema.safeParse("")).not.toThrow();
+    expect(percentStringSchema.safeParse("").success).toBe(false);
   });
 });

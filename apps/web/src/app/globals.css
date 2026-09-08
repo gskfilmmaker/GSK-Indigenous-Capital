@@ -1,0 +1,34 @@
+/**
+ * App-level global CSS — the one file besides @gsk/ui/tokens.css allowed
+ * to be global rather than a CSS Module (Next.js App Router restriction:
+ * global CSS may only be imported from the root layout). Base body
+ * styling only; every page/component below this uses CSS Modules.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--gsk-color-paper);
+  color: var(--gsk-color-ink);
+  font-family: var(--gsk-font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--gsk-color-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gsk-color-accent);
+  outline-offset: 2px;
+}
