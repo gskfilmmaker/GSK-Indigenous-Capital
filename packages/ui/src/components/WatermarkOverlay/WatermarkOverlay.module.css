@@ -1,0 +1,36 @@
+.overlay {
+  display: flex;
+  flex-direction: column;
+}
+
+.banner {
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gsk-color-state-block);
+  background: var(--gsk-color-state-block-tint);
+  padding: var(--gsk-space-3) var(--gsk-space-4);
+  margin: 0;
+  border-bottom: 1px solid var(--gsk-color-line);
+}
+
+.content {
+  position: relative;
+  overflow: hidden;
+}
+
+.stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  font-family: var(--gsk-font-display);
+  font-size: 42px;
+  font-weight: 500;
+  color: var(--gsk-color-state-block);
+  opacity: 0.16;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}

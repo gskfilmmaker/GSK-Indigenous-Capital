@@ -1,0 +1,11 @@
+.banner {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gsk-color-ink-soft);
+  background: var(--gsk-color-paper-raised);
+  border: 1px solid var(--gsk-color-line);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-4) var(--gsk-space-5);
+  margin: 0;
+}

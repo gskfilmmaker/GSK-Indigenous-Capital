@@ -5,5 +5,12 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "exclude": ["**/*.test.ts", "vitest.config.ts", "dist"]
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx",
+    "vitest.config.ts",
+    ".storybook",
+    "dist"
+  ]
 }

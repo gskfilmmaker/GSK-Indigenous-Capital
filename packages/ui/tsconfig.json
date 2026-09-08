@@ -6,7 +6,19 @@
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
-    "types": ["node"]
+    "types": ["node"],
+    // CSS Modules (src/css-modules.d.ts) type their default export as an
+    // index signature, so the base config's noPropertyAccessFromIndexSignature
+    // would force bracket notation (`styles["table"]`) for every class name
+    // reference in every component. That's a worse reading experience than
+    // the dot-notation typo risk this flag guards against elsewhere.
+    "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vitest.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vitest.config.ts",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx"
+  ]
 }

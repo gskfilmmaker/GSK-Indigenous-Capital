@@ -1,0 +1,149 @@
+/**
+ * GSK Indigenous Capital — SAFE Studio design tokens.
+ *
+ * Semantic colour roles, not raw hex, are what components consume — this is
+ * the theming seam the master spec asks for ("leave clear theming seams,
+ * don't hardcode culturally specific motifs"). A future Indigenous-partner
+ * theme redefines the custom properties below; it does not touch component
+ * CSS.
+ *
+ * Light is the default (bare :root). Dark redefines the same tokens twice:
+ * once under prefers-color-scheme for the system default, and again under
+ * [data-theme="dark"] so an explicit in-app toggle always wins over the
+ * system setting.
+ */
+:root {
+  --gsk-color-paper: #f3f4ef;
+  --gsk-color-paper-raised: #eaebe3;
+  --gsk-color-ink: #141f1a;
+  --gsk-color-ink-soft: #3d473f;
+  --gsk-color-ink-faint: #707868;
+  --gsk-color-line: #d6d9ce;
+  --gsk-color-line-strong: #b8bcac;
+
+  --gsk-color-accent: #3e5c87;
+  --gsk-color-accent-tint: #e1e7f0;
+  --gsk-color-accent-contrast: #f3f4ef;
+
+  --gsk-color-state-neutral: #6b7268;
+  --gsk-color-state-neutral-tint: #e6e7e0;
+  --gsk-color-state-progress: #3e5c87;
+  --gsk-color-state-progress-tint: #e1e7f0;
+  --gsk-color-state-attention: #a97a2e;
+  --gsk-color-state-attention-tint: #f1e7d3;
+  --gsk-color-state-block: #9b4630;
+  --gsk-color-state-block-tint: #f1dfd8;
+  --gsk-color-state-recorded: #3f6656;
+  --gsk-color-state-recorded-tint: #dce8e2;
+
+  /* Ownership-bar / dilution-bridge segment colours. Only --gsk-color-bar-4
+     (the newest-money / SAFE-investor segment) uses the brand accent; the
+     rest is a neutral ink ramp so the accent stays meaningful. */
+  --gsk-color-bar-1: #141f1a;
+  --gsk-color-bar-2: #3d473f;
+  --gsk-color-bar-3: #707868;
+  --gsk-color-bar-4: #3e5c87;
+
+  --gsk-font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --gsk-font-body: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  --gsk-font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+
+  --gsk-space-1: 4px;
+  --gsk-space-2: 8px;
+  --gsk-space-3: 12px;
+  --gsk-space-4: 16px;
+  --gsk-space-5: 24px;
+  --gsk-space-6: 32px;
+  --gsk-space-7: 48px;
+  --gsk-space-8: 64px;
+
+  --gsk-radius-sm: 2px;
+  --gsk-radius-pill: 100px;
+
+  --gsk-motion-fast: 120ms;
+  --gsk-motion-base: 200ms;
+  --gsk-motion-slow: 400ms;
+  --gsk-motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --gsk-elevation-1: 0 1px 2px rgba(20, 31, 26, 0.08);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --gsk-color-paper: #121815;
+    --gsk-color-paper-raised: #1b221d;
+    --gsk-color-ink: #edefe9;
+    --gsk-color-ink-soft: #c3cabf;
+    --gsk-color-ink-faint: #8b9186;
+    --gsk-color-line: #303930;
+    --gsk-color-line-strong: #454f44;
+
+    --gsk-color-accent: #93b0dd;
+    --gsk-color-accent-tint: #24314a;
+    --gsk-color-accent-contrast: #121815;
+
+    --gsk-color-state-neutral: #9aa096;
+    --gsk-color-state-neutral-tint: #262c25;
+    --gsk-color-state-progress: #93b0dd;
+    --gsk-color-state-progress-tint: #24314a;
+    --gsk-color-state-attention: #d3a257;
+    --gsk-color-state-attention-tint: #3a2f1c;
+    --gsk-color-state-block: #d98a73;
+    --gsk-color-state-block-tint: #3b241d;
+    --gsk-color-state-recorded: #7fb09b;
+    --gsk-color-state-recorded-tint: #1d2e27;
+
+    --gsk-color-bar-1: #edefe9;
+    --gsk-color-bar-2: #b7bfaf;
+    --gsk-color-bar-3: #7a8177;
+    --gsk-color-bar-4: #93b0dd;
+
+    --gsk-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+
+    color-scheme: dark;
+  }
+}
+
+[data-theme="dark"] {
+  --gsk-color-paper: #121815;
+  --gsk-color-paper-raised: #1b221d;
+  --gsk-color-ink: #edefe9;
+  --gsk-color-ink-soft: #c3cabf;
+  --gsk-color-ink-faint: #8b9186;
+  --gsk-color-line: #303930;
+  --gsk-color-line-strong: #454f44;
+
+  --gsk-color-accent: #93b0dd;
+  --gsk-color-accent-tint: #24314a;
+  --gsk-color-accent-contrast: #121815;
+
+  --gsk-color-state-neutral: #9aa096;
+  --gsk-color-state-neutral-tint: #262c25;
+  --gsk-color-state-progress: #93b0dd;
+  --gsk-color-state-progress-tint: #24314a;
+  --gsk-color-state-attention: #d3a257;
+  --gsk-color-state-attention-tint: #3a2f1c;
+  --gsk-color-state-block: #d98a73;
+  --gsk-color-state-block-tint: #3b241d;
+  --gsk-color-state-recorded: #7fb09b;
+  --gsk-color-state-recorded-tint: #1d2e27;
+
+  --gsk-color-bar-1: #edefe9;
+  --gsk-color-bar-2: #b7bfaf;
+  --gsk-color-bar-3: #7a8177;
+  --gsk-color-bar-4: #93b0dd;
+
+  --gsk-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --gsk-motion-fast: 0ms;
+    --gsk-motion-base: 0ms;
+    --gsk-motion-slow: 0ms;
+  }
+}

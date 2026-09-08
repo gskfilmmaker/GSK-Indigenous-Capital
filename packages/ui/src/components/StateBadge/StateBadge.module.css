@@ -1,0 +1,37 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--gsk-font-body);
+  font-size: 12px;
+  line-height: 1;
+  padding: var(--gsk-space-2) var(--gsk-space-3);
+  border-radius: var(--gsk-radius-pill);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.neutral {
+  color: var(--gsk-color-ink-soft);
+  background: var(--gsk-color-state-neutral-tint);
+  border-color: var(--gsk-color-line-strong);
+}
+
+.progress {
+  color: var(--gsk-color-state-progress);
+  background: var(--gsk-color-state-progress-tint);
+}
+
+.attention {
+  color: var(--gsk-color-state-attention);
+  background: var(--gsk-color-state-attention-tint);
+}
+
+.block {
+  color: var(--gsk-color-state-block);
+  background: var(--gsk-color-state-block-tint);
+}
+
+.recorded {
+  color: var(--gsk-color-state-recorded);
+  background: var(--gsk-color-state-recorded-tint);
+}

@@ -1,0 +1,56 @@
+.list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--gsk-space-2);
+  color: var(--gsk-color-ink-faint);
+}
+
+.item + .item::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--gsk-color-line-strong);
+  margin-right: var(--gsk-space-2);
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--gsk-radius-pill);
+  border: 1px solid var(--gsk-color-line-strong);
+  font-family: var(--gsk-font-mono);
+  font-size: 11px;
+  color: var(--gsk-color-ink-faint);
+  flex: none;
+}
+
+.itemCurrent .marker {
+  background: var(--gsk-color-ink);
+  border-color: var(--gsk-color-ink);
+  color: var(--gsk-color-paper);
+}
+
+.itemComplete .marker {
+  background: var(--gsk-color-state-recorded-tint);
+  border-color: var(--gsk-color-state-recorded);
+  color: var(--gsk-color-state-recorded);
+}
+
+.itemCurrent .label {
+  color: var(--gsk-color-ink);
+  font-weight: 500;
+}
