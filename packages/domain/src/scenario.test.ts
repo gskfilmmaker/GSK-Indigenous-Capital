@@ -23,6 +23,33 @@ describe("existingCapitalizationSimpleSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  // Regression: reported from live production testing of apps/web's
+  // Scenario Studio. A field left empty mid-edit (e.g. select-all-and-
+  // retype, or clearing a field before typing a new value — completely
+  // normal live-form input) reached this schema's object-level `.refine()`
+  // before the per-field percentStringSchema check had a chance to stop
+  // it: Zod does not abort a `.refine()` chain when a nested field already
+  // failed its own check (same root cause as decimal.test.ts's regression
+  // tests), so `new Decimal("")` inside the refine threw a raw error
+  // instead of `safeParse` returning `{success: false}` — surfacing to the
+  // end user as "Application error: a client-side exception has occurred".
+  it("returns a failed parse, not a thrown error, when a field is empty", () => {
+    expect(() =>
+      existingCapitalizationSimpleSchema.safeParse({
+        founders: "",
+        grantedOptions: "0.08",
+        unissuedPool: "0.02",
+      }),
+    ).not.toThrow();
+    expect(
+      existingCapitalizationSimpleSchema.safeParse({
+        founders: "",
+        grantedOptions: "0.08",
+        unissuedPool: "0.02",
+      }).success,
+    ).toBe(false);
+  });
 });
 
 function validScenario(overrides: Partial<Scenario> = {}): Scenario {

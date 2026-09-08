@@ -195,9 +195,18 @@ export function ScenarioStudio() {
   );
 }
 
+const SAFE_FIELD_LABELS: Record<string, string> = {
+  purchaseAmount: "investment amount",
+  valuationCap: "valuation cap",
+  discountPercent: "discount",
+};
+
 function describeIssuePath(issue: SimpleIssue): string {
-  const [first, second] = issue.path;
-  if (first === "safes" && typeof second === "number") return `SAFE ${second + 1}`;
+  const [first, second, third] = issue.path;
+  if (first === "safes" && typeof second === "number") {
+    const fieldLabel = typeof third === "string" ? SAFE_FIELD_LABELS[third] : undefined;
+    return fieldLabel ? `SAFE ${second + 1} ${fieldLabel}` : `SAFE ${second + 1}`;
+  }
   if (first === "existingCapitalization") return "Existing capitalization";
   return "";
 }
@@ -206,6 +215,19 @@ function ValidationErrors({ issues }: { issues: SimpleIssue[] }) {
   if (issues.length === 0) {
     return <p className={styles.emptyState}>Enter your existing capitalization to begin.</p>;
   }
+  // A single malformed field (e.g. left empty) fails more than one check in
+  // its schema chain — a "must be a plain decimal number" format issue and
+  // a "must be greater than zero" content issue, both individually true.
+  // Showing every one is noisy for what's really one problem with one
+  // field; keep only the first (most fundamental — format before content)
+  // issue per field path.
+  const seenPaths = new Set<string>();
+  const dedupedIssues = issues.filter((issue) => {
+    const key = issue.path.join(".");
+    if (seenPaths.has(key)) return false;
+    seenPaths.add(key);
+    return true;
+  });
   return (
     // role="alert" lives on this wrapper, not on the <li> elements below —
     // an ARIA role on an <li> overrides its implicit listitem role, which
@@ -213,7 +235,7 @@ function ValidationErrors({ issues }: { issues: SimpleIssue[] }) {
     // aria-allowed-role, list).
     <div role="alert">
       <ul className={styles.errorList}>
-        {issues.map((issue, index) => {
+        {dedupedIssues.map((issue, index) => {
           const prefix = describeIssuePath(issue);
           return (
             <li key={index} className={styles.errorItem}>
@@ -291,7 +313,7 @@ function ScenarioResults({
   const ownershipNarrative =
     determinableCount === 0
       ? `No cap SAFEs modelled yet. Founders and existing holders currently hold ${formatPercent(totalAfter.toString())} of the company.`
-      : `${determinableCount} cap SAFE${determinableCount === 1 ? "" : "s"} represent an indicative ${formatPercent(result.totalCapSafeOwnership.toString())} of the company before a priced round; existing holders are diluted to ${formatPercent(
+      : `${determinableCount} cap SAFE${determinableCount === 1 ? "" : "s"} represent${determinableCount === 1 ? "s" : ""} an indicative ${formatPercent(result.totalCapSafeOwnership.toString())} of the company before a priced round; existing holders are diluted to ${formatPercent(
           founders.ownershipAfterSafes
             .plus(grantedOptions.ownershipAfterSafes)
             .plus(unissuedPool.ownershipAfterSafes)

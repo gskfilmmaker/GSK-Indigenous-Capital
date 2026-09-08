@@ -17,8 +17,21 @@ export const existingCapitalizationSimpleSchema = z
   })
   .refine(
     (value) => {
-      const sum = new Decimal(value.founders).plus(value.grantedOptions).plus(value.unissuedPool);
-      return sum.equals(1);
+      // Same defensive pattern as decimal.ts's own `.refine()`s: Zod does
+      // not abort this refine when a nested field (founders/grantedOptions/
+      // unissuedPool) already failed its own percentStringSchema check — the
+      // predicate below still runs against the raw, possibly-malformed
+      // value. An empty string reaches here from completely normal editing
+      // (e.g. select-all-and-retype in a live form), and `new Decimal("")`
+      // throws a raw DecimalError rather than deferring to the field-level
+      // validation issue already reported. Catch it and treat it as "can't
+      // confirm the sum is 1" rather than letting it crash the caller.
+      try {
+        const sum = new Decimal(value.founders).plus(value.grantedOptions).plus(value.unissuedPool);
+        return sum.equals(1);
+      } catch {
+        return false;
+      }
     },
     { message: "founders, grantedOptions, and unissuedPool must sum to exactly 1 (100%)" },
   );
