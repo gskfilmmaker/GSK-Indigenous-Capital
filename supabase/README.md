@@ -5,30 +5,40 @@ Schema, constraints, RLS policies, `security definer` functions, triggers
 
 ## Step 4 status
 
-`migrations/` contains six migrations covering organizations,
-memberships, companies, scenarios/versions/runs/snapshots, snapshot
-share links, and audit/outbox/idempotency (spec §9.1, §9.2, §9.5, §9.8,
-this project's Step 4 scope). Every table is RLS-enabled and
-default-deny from the migration that creates it
-(`docs/adr/0003-supabase-rls-strategy.md`); `tests/` holds a 50-assertion
-pgTAP suite proving cross-tenant isolation for every one of them (spec
-§25 item 6), plus append-only and hash-chain-integrity checks where
-those apply.
+`migrations/` contains seven migrations covering extensions/helpers,
+authz capabilities, organizations/memberships, companies, scenarios/
+versions/runs/snapshots, snapshot share links, and audit/outbox/
+idempotency (spec §9.1, §9.2, §9.5, §9.8, this project's Step 4 scope).
+Every table is RLS-enabled and default-deny from the migration that
+creates it (`docs/adr/0003-supabase-rls-strategy.md`); `tests/` holds a
+50-assertion pgTAP suite proving cross-tenant isolation for every one
+of them (spec §25 item 6), plus append-only and hash-chain-integrity
+checks where those apply.
 
-**Not yet applied to the real Supabase project.** The sandbox these
-migrations were authored and tested in has no network path to Supabase
-at all (raw-TCP Postgres connections and the `api.supabase.com`
-management API are both blocked by its egress proxy policy) — see the
-git history of this directory for the full diagnosis. Every migration
-was instead verified against a local Postgres 16 + pgTAP instance that
+**Applied to the real Supabase project** (`trrebatalezmucwpovcw`) as of
+commit `682f808`, by an agent with real network access — this sandbox
+never had one (raw-TCP Postgres connections and the `api.supabase.com`
+management API are both blocked by its egress proxy policy; see the git
+history of this directory for the full diagnosis). All seven migrations
+were verified locally first against a Postgres 16 + pgTAP instance that
 approximates the real project closely enough to catch real bugs (and
 did — see the commit messages for the GRANT and `SELECT ... FOR UPDATE`
-privilege issues found and fixed this way). Someone with real network
-access to the project (the account owner, or an agent acting on their
-behalf) needs to apply them for real before any application code can
-read or write through Supabase.
+privilege issues found and fixed this way), then applied for real via
+`supabase db push` and confirmed against `supabase migration list` and
+direct spot-queries (table access, `authz.*` function presence).
 
-### How to apply
+**Known gap:** the pgTAP suite in `tests/` has been run and passes
+(50/50) against the local approximation harness, but has **not** been
+run against the real, deployed project — the environment that applied
+the migrations had no Docker available for `supabase test db` (which in
+any case tests a fresh local copy, not the live remote project itself —
+see below). The schema applied is byte-identical to what was locally
+verified, so this is a residual-risk gap, not an unknown: it would only
+surface a difference between this project's real `auth` schema and the
+local stand-in (unlikely, since both are recreations of the same
+Supabase/PostgREST contract, but not zero).
+
+### How to apply (for future migrations)
 
 From the repo root, with the Supabase CLI available (already a
 devDependency — invoke it via `pnpm exec supabase`, no global install
@@ -40,7 +50,7 @@ needed) and the project's credentials from `.env`/`apps/web/.env.local`
 # password — SUPABASE_DB_PASSWORD in .env).
 pnpm exec supabase link --project-ref trrebatalezmucwpovcw
 
-# Apply all six migrations, in order, to the linked project.
+# Apply any new migrations, in order, to the linked project.
 pnpm exec supabase db push
 ```
 
@@ -49,18 +59,31 @@ pnpm exec supabase db push
 migrations are skipped. After it completes, verify with:
 
 ```bash
-pnpm exec supabase migration list   # should show all six as applied remotely
+pnpm exec supabase migration list   # should show all as applied remotely
 ```
 
-The pgTAP suite in `tests/` was authored against, and only verified
-against, the local harness (`scripts/dev/local-supabase-harness.sql`)
-described below — it has not been run against the real project. Running
-it there requires either the Supabase CLI's local dev stack
-(`supabase test db`, which spins up a disposable local copy — this does
-**not** touch the real project) or `pg_prove` pointed at a real project's
-connection string directly; either is optional re-verification, not a
-prerequisite for `db push`, since the schema itself is unchanged between
-what was tested locally and what ships in `migrations/`.
+`pnpm exec supabase test db` (requires Docker) re-verifies the suite
+against a fresh **local** copy of the schema — useful re-verification,
+but it does not touch the deployed project and so can't rule out an
+environment-specific difference there. To actually run pgTAP against
+the live, deployed project, point `pg_prove` at its **direct** (not
+pooled) connection string — `DIRECT_URL` in `.env`, not `DATABASE_URL`,
+since the pgTAP suite relies on `SET LOCAL ROLE`/session state that a
+transaction-pooled (pgbouncer) connection isn't guaranteed to preserve
+the way a direct connection is:
+
+```bash
+pg_prove -d "$DIRECT_URL" supabase/tests/*.sql
+```
+
+This is safe to run as-is: `00_setup.sql` (the first file in that glob)
+only defines `auth.set_test_session()`, which wraps the real project's
+own `auth.uid()`/session mechanism rather than replacing any part of
+it — unlike `scripts/dev/local-supabase-harness.sql`, which stubs
+`auth.users`/`auth.uid()`/the `anon`/`authenticated`/`service_role`
+roles from scratch and must never be applied to a real Supabase project
+that already provides all of that genuinely (see "Local verification
+harness" below). This has not been done yet.
 
 ## Local verification harness
 
