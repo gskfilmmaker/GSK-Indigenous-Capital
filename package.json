@@ -1,0 +1,39 @@
+{
+  "name": "gsk-indigenous-capital-safe-studio",
+  "private": true,
+  "version": "0.0.0",
+  "description": "GSK Indigenous Capital — SAFE Studio. See CLAUDE.md before making product, legal, data, or architecture decisions.",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:unit": "turbo run test",
+    "test:e2e": "playwright test --config=tests/e2e/playwright.config.ts",
+    "test:pgtap": "bash scripts/ci/run-pgtap.sh",
+    "test:axe": "bash scripts/ci/run-axe.sh",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "prettier": "^3.4.1",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.16.0"
+  }
+}
