@@ -27,6 +27,12 @@ grant service_role to postgres;
 
 create schema if not exists auth;
 
+-- Real Supabase projects grant USAGE on schema auth (and EXECUTE on
+-- auth.uid()/auth.role()) to anon/authenticated by default, since RLS
+-- policies and application code both call auth.uid() directly as those
+-- roles, not only from within security definer functions. Match that here.
+grant usage on schema auth to anon, authenticated;
+
 -- Real Supabase projects provide auth.users (owned by GoTrue/Auth); our
 -- migrations never create or modify it. This minimal stand-in exists only
 -- so local FK constraints and test fixtures have something to reference.
@@ -46,6 +52,9 @@ create or replace function auth.role() returns text
   as $$
     select nullif(current_setting('request.jwt.claim.role', true), '')
   $$;
+
+grant execute on function auth.uid() to anon, authenticated;
+grant execute on function auth.role() to anon, authenticated;
 
 -- Test helper: run the rest of a psql session "as" a given user/role,
 -- the same way PostgREST sets these per-request from the JWT.
