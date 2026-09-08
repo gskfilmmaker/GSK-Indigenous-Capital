@@ -11,7 +11,11 @@
     "test": "vitest run",
     "clean": "rm -rf dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@gsk/audit": "workspace:*",
+    "@gsk/domain": "workspace:*",
+    "decimal.js": "^10.4.3"
+  },
   "devDependencies": {
     "fast-check": "^3.23.1",
     "typescript": "^5.7.2",
