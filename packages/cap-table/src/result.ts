@@ -1,5 +1,6 @@
 import { canonicalHash, canonicalize } from "@gsk/audit";
 import type { CapSafeOwnershipResult } from "./capSafeOwnership.js";
+import { serializeScenarioRunResult, type ScenarioRunResult } from "./runScenario.js";
 
 export interface SerializableCapSafeResult {
   rows: { id: string; ownership: string }[];
@@ -28,4 +29,13 @@ export function hashCapSafeResult(result: CapSafeOwnershipResult): string {
 
 export function canonicalizeCapSafeResult(result: CapSafeOwnershipResult): string {
   return canonicalize(serializeCapSafeResult(result));
+}
+
+/** Spec §8 test 15: identical canonical input yields a byte-equivalent hash. */
+export function hashScenarioRunResult(result: ScenarioRunResult): string {
+  return canonicalHash(serializeScenarioRunResult(result));
+}
+
+export function canonicalizeScenarioRunResult(result: ScenarioRunResult): string {
+  return canonicalize(serializeScenarioRunResult(result));
 }

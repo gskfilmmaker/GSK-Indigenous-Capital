@@ -19,6 +19,46 @@
   margin: 0;
 }
 
+.saveRow {
+  display: flex;
+  align-items: center;
+  gap: var(--gsk-space-3);
+  margin-bottom: var(--gsk-space-5);
+}
+
+.saveButton {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gsk-color-accent-contrast);
+  background: var(--gsk-color-ink);
+  border: none;
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-2) var(--gsk-space-4);
+  cursor: pointer;
+}
+
+.saveButton:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.savedIndicator {
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+  color: var(--gsk-color-state-recorded);
+}
+
+.saveError {
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+  color: var(--gsk-color-state-block);
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 380px) minmax(0, 1fr);

@@ -1,0 +1,28 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.nameField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gsk-space-1);
+  max-width: 380px;
+  margin-bottom: var(--gsk-space-4);
+}
+
+.nameLabel {
+  font-family: var(--gsk-font-body);
+  font-size: 12px;
+  color: var(--gsk-color-ink-soft);
+}
+
+.nameInput {
+  font-family: var(--gsk-font-display);
+  font-size: 18px;
+  color: var(--gsk-color-ink);
+  background: var(--gsk-color-paper);
+  border: 1px solid var(--gsk-color-line-strong);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-2) var(--gsk-space-3);
+}

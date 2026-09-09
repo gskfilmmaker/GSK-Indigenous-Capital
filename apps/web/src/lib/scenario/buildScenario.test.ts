@@ -1,6 +1,10 @@
 import { parseScenario, type SafeId } from "@gsk/domain";
 import { describe, expect, it } from "vitest";
-import { buildScenarioInput, type SafeRowFormState } from "./buildScenario.js";
+import {
+  buildScenarioInput,
+  hydrateFormStateFromScenario,
+  type SafeRowFormState,
+} from "./buildScenario.js";
 
 function row(overrides: Partial<SafeRowFormState> = {}): SafeRowFormState {
   return {
@@ -94,5 +98,57 @@ describe("buildScenarioInput", () => {
     );
     const parsed = parseScenario(input);
     expect(parsed.success).toBe(false);
+  });
+});
+
+describe("hydrateFormStateFromScenario", () => {
+  it("round-trips a cap SAFE, a discount-only SAFE, and an MFN row back to equivalent form state", () => {
+    const rows = [
+      row({ id: "018e5b3a-0000-7000-8000-000000000002" as SafeId, investorLabel: "Acme Fund" }),
+      row({
+        id: "018e5b3a-0000-7000-8000-000000000003" as SafeId,
+        instrumentType: "discount_only",
+        discountPercent: "20",
+        valuationCap: "",
+      }),
+      row({
+        id: "018e5b3a-0000-7000-8000-000000000004" as SafeId,
+        instrumentType: "mfn",
+        valuationCap: "",
+      }),
+    ];
+    const input = buildScenarioInput(
+      "018e5b3a-0000-7000-8000-000000000001",
+      existingCapitalization,
+      rows,
+    );
+    const parsed = parseScenario(input);
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+
+    const hydrated = hydrateFormStateFromScenario(parsed.data);
+    expect(hydrated.existingCapitalization).toEqual(existingCapitalization);
+    expect(hydrated.safeRows).toEqual(rows);
+  });
+
+  it("restores SAFE row order from sequence, even if the persisted array itself is out of order", () => {
+    const scenario = parseScenario(
+      buildScenarioInput("018e5b3a-0000-7000-8000-000000000001", existingCapitalization, [
+        row({ id: "018e5b3a-0000-7000-8000-000000000002" as SafeId }),
+        row({
+          id: "018e5b3a-0000-7000-8000-000000000003" as SafeId,
+          instrumentType: "mfn",
+          valuationCap: "",
+        }),
+      ]),
+    );
+    if (!scenario.success) throw new Error("fixture must be valid");
+    const reordered = { ...scenario.data, safes: [...scenario.data.safes].reverse() };
+
+    const hydrated = hydrateFormStateFromScenario(reordered);
+    expect(hydrated.safeRows.map((r) => r.id)).toEqual([
+      "018e5b3a-0000-7000-8000-000000000002",
+      "018e5b3a-0000-7000-8000-000000000003",
+    ]);
   });
 });

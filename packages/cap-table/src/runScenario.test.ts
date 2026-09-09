@@ -1,7 +1,7 @@
 import { parseScenario } from "@gsk/domain";
 import { describe, expect, it } from "vitest";
 import { UnsupportedCaseError } from "./errors.js";
-import { runScenario } from "./runScenario.js";
+import { runScenario, serializeScenarioRunResult } from "./runScenario.js";
 
 function validScenario(overrides: Record<string, unknown> = {}) {
   return {
@@ -110,5 +110,44 @@ describe("runScenario", () => {
     if (!parsed.success) throw new Error("fixture must be valid");
 
     expect(() => runScenario(parsed.data)).toThrow(UnsupportedCaseError);
+  });
+});
+
+describe("serializeScenarioRunResult", () => {
+  it("converts every Decimal field to a plain JSON-safe string, preserving row order and shape", () => {
+    const parsed = parseScenario(validScenario());
+    if (!parsed.success) throw new Error("fixture must be valid");
+
+    const result = runScenario(parsed.data);
+    const serialized = serializeScenarioRunResult(result);
+
+    expect(serialized).toEqual({
+      engineVersion: "1",
+      schemaVersion: 1,
+      existingCapitalizationRows: [
+        { key: "founders", ownershipBeforeSafes: "0.9", ownershipAfterSafes: "0.81" },
+        { key: "grantedOptions", ownershipBeforeSafes: "0.08", ownershipAfterSafes: "0.072" },
+        { key: "unissuedPool", ownershipBeforeSafes: "0.02", ownershipAfterSafes: "0.018" },
+      ],
+      safeRows: [
+        {
+          id: "018e5b3a-0000-7000-8000-000000000002",
+          instrumentType: "post_money_cap",
+          determinable: true,
+          ownership: "0.1",
+        },
+        {
+          id: "018e5b3a-0000-7000-8000-000000000003",
+          instrumentType: "discount_only",
+          determinable: false,
+        },
+        { id: "018e5b3a-0000-7000-8000-000000000004", instrumentType: "mfn", determinable: false },
+      ],
+      totalCapSafeOwnership: "0.1",
+      legacyOwnership: "0.9",
+    });
+    // Round-trippable through JSON.stringify/parse without any Decimal
+    // instances leaking through as e.g. "[object Object]".
+    expect(JSON.parse(JSON.stringify(serialized))).toEqual(serialized);
   });
 });

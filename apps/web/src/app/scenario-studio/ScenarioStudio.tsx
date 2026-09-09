@@ -6,7 +6,7 @@ import {
   ENGINE_VERSION,
   type ScenarioRunResult,
 } from "@gsk/cap-table";
-import { newSafeId, newScenarioId, parseScenario, type SafeId } from "@gsk/domain";
+import { newSafeId, newScenarioId, parseScenario, type ScenarioId, type SafeId } from "@gsk/domain";
 import {
   DataTable,
   DilutionBridge,
@@ -27,6 +27,26 @@ import {
 } from "../../lib/scenario/buildScenario";
 import { INSTRUMENT_LABELS, SafeRowEditor } from "./SafeRowEditor";
 import styles from "./ScenarioStudio.module.css";
+
+export type SaveOutcome =
+  { success: true; versionNumber: number } | { success: false; error: string };
+
+export interface ScenarioStudioPersistence {
+  scenarioName: string;
+  /** Only called with a schema-valid scenario — never on an "invalid" run outcome. */
+  onSave: (scenarioInput: unknown) => Promise<SaveOutcome>;
+  /** Version number of the most recently saved version, if any (hydrating an existing scenario). */
+  savedVersionNumber?: number | undefined;
+}
+
+export interface ScenarioStudioProps {
+  /** Reuses an already-persisted scenario's id rather than generating a fresh one. */
+  scenarioId?: ScenarioId | undefined;
+  initialExistingCapitalization?: ExistingCapitalizationFormState | undefined;
+  initialSafeRows?: SafeRowFormState[] | undefined;
+  /** Omit for the public, unpersisted /scenario-studio trial page. */
+  persistence?: ScenarioStudioPersistence | undefined;
+}
 
 const DEFAULT_EXISTING_CAPITALIZATION: ExistingCapitalizationFormState = {
   founders: "90",
@@ -57,21 +77,40 @@ type RunOutcome =
 
 /**
  * SAFE Scenario Studio (spec §6.5), scoped to this project's Step 4: cap
- * SAFEs only, no priced round yet. Entirely client-side and unpersisted —
- * Supabase migrations exist (see supabase/migrations) but are not yet
- * applied to any live project, so there is nowhere to save a scenario to
- * yet. Recomputes live on every keystroke; nothing here ever touches a JS
+ * SAFEs only, no priced round yet. Recomputes live on every keystroke
+ * (client-side, for instant feedback); nothing here ever touches a JS
  * `number` for a money/share/ownership value (root CLAUDE.md invariant 2).
+ *
+ * Persistence is optional (the `persistence` prop): the public
+ * `/scenario-studio` trial page omits it and stays exactly as ephemeral
+ * as before — "no account needed, nothing is saved." The authenticated
+ * `/app/:orgSlug/companies/:companyId/scenarios/:scenarioId` route
+ * supplies it; saving always re-runs the engine server-side from the
+ * validated input rather than trusting this client-side run's result
+ * (see apps/web/src/server/commands/saveScenario.ts).
  */
-export function ScenarioStudio() {
-  const [scenarioId] = useState(() => newScenarioId());
+export function ScenarioStudio({
+  scenarioId: scenarioIdProp,
+  initialExistingCapitalization,
+  initialSafeRows,
+  persistence,
+}: ScenarioStudioProps = {}) {
+  const [scenarioId] = useState(() => scenarioIdProp ?? newScenarioId());
   const [existingCapitalization, setExistingCapitalization] = useState(
-    DEFAULT_EXISTING_CAPITALIZATION,
+    initialExistingCapitalization ?? DEFAULT_EXISTING_CAPITALIZATION,
   );
-  const [safeRows, setSafeRows] = useState<SafeRowFormState[]>([]);
+  const [safeRows, setSafeRows] = useState<SafeRowFormState[]>(initialSafeRows ?? []);
+  const [saveState, setSaveState] = useState<
+    { status: "idle" } | { status: "saving" } | { status: "error"; error: string }
+  >({ status: "idle" });
+  const [savedVersionNumber, setSavedVersionNumber] = useState(persistence?.savedVersionNumber);
+
+  const scenarioInput = useMemo(
+    () => buildScenarioInput(scenarioId, existingCapitalization, safeRows),
+    [scenarioId, existingCapitalization, safeRows],
+  );
 
   const runOutcome = useMemo<RunOutcome>(() => {
-    const scenarioInput = buildScenarioInput(scenarioId, existingCapitalization, safeRows);
     const parsed = parseScenario(scenarioInput);
     if (!parsed.success) {
       return { status: "invalid", issues: parsed.error.issues };
@@ -84,7 +123,19 @@ export function ScenarioStudio() {
       }
       throw error;
     }
-  }, [scenarioId, existingCapitalization, safeRows]);
+  }, [scenarioInput]);
+
+  async function handleSave() {
+    if (!persistence || runOutcome.status === "invalid") return;
+    setSaveState({ status: "saving" });
+    const outcome = await persistence.onSave(scenarioInput);
+    if (outcome.success) {
+      setSaveState({ status: "idle" });
+      setSavedVersionNumber(outcome.versionNumber);
+    } else {
+      setSaveState({ status: "error", error: outcome.error });
+    }
+  }
 
   function updateSafeRow(id: SafeId, patch: Partial<SafeRowFormState>) {
     setSafeRows((rows) => rows.map((row) => (row.id === id ? { ...row, ...patch } : row)));
@@ -112,6 +163,26 @@ export function ScenarioStudio() {
           state={runOutcome.status === "succeeded" ? "succeeded" : "failed"}
         />
       </header>
+      {persistence ? (
+        <div className={styles.saveRow}>
+          <button
+            type="button"
+            className={styles.saveButton}
+            onClick={() => void handleSave()}
+            disabled={runOutcome.status === "invalid" || saveState.status === "saving"}
+          >
+            {saveState.status === "saving" ? "Saving…" : "Save"}
+          </button>
+          {savedVersionNumber ? (
+            <span className={styles.savedIndicator}>Saved as version {savedVersionNumber}</span>
+          ) : null}
+          {saveState.status === "error" ? (
+            <span className={styles.saveError} role="alert">
+              {saveState.error}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
       <DisclaimerBanner />
 
       <div className={styles.layout}>

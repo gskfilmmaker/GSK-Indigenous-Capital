@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { ScenarioStudio } from "./ScenarioStudio.js";
 
 describe("ScenarioStudio", () => {
@@ -108,5 +108,48 @@ describe("ScenarioStudio", () => {
 
     expect(screen.getByText(/no safes added yet/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/investment amount/i)).not.toBeInTheDocument();
+  });
+
+  it("renders no Save button when the persistence prop is omitted (the public trial page)", () => {
+    render(<ScenarioStudio />);
+    expect(screen.queryByRole("button", { name: /^save$/i })).not.toBeInTheDocument();
+  });
+
+  it("disables Save while the existing capitalization is invalid, and calls onSave with a schema-valid scenario once fixed", async () => {
+    const onSave = vi.fn().mockResolvedValue({ success: true, versionNumber: 1 });
+    render(<ScenarioStudio persistence={{ scenarioName: "Test", onSave }} />);
+
+    fireEvent.change(screen.getByLabelText(/founders \/ legacy/i), { target: { value: "50" } });
+    expect(screen.getByRole("button", { name: /^save$/i })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/founders \/ legacy/i), { target: { value: "90" } });
+    expect(screen.getByRole("button", { name: /^save$/i })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+    expect(onSave.mock.calls[0]?.[0]).toMatchObject({ schemaVersion: 1, currency: "CAD" });
+    await waitFor(() => expect(screen.getByText(/saved as version 1/i)).toBeInTheDocument());
+  });
+
+  it("shows a save error inline without losing the entered data", async () => {
+    const onSave = vi.fn().mockResolvedValue({ success: false, error: "insufficient capability" });
+    render(<ScenarioStudio persistence={{ scenarioName: "Test", onSave }} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(/insufficient capability/i),
+    );
+  });
+
+  it("hydrates from initial existing capitalization and SAFE rows (loading a previously saved scenario)", () => {
+    render(
+      <ScenarioStudio
+        initialExistingCapitalization={{ founders: "80", grantedOptions: "15", unissuedPool: "5" }}
+        initialSafeRows={[]}
+        persistence={{ scenarioName: "Loaded", onSave: vi.fn(), savedVersionNumber: 3 }}
+      />,
+    );
+    expect(screen.getByLabelText(/founders \/ legacy/i)).toHaveValue("80");
+    expect(screen.getByText(/saved as version 3/i)).toBeInTheDocument();
   });
 });

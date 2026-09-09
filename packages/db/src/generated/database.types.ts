@@ -4,7 +4,7 @@
  * This project's sandbox has no network access to the Supabase Management
  * API, so `supabase gen types typescript --project-id ...` cannot run here.
  * This file is written by hand to match `supabase/migrations/*.sql`
- * exactly (schema as of 20260908150800_create_company_command.sql) in
+ * exactly (schema as of 20260908150900_save_scenario_command.sql) in
  * the same shape the real CLI would produce, so it is a drop-in
  * replacement once Management API access exists — regenerate with:
  *
@@ -652,6 +652,32 @@ export interface Database {
           p_event_hash: string;
         };
         Returns: Database["public"]["Tables"]["companies"]["Row"];
+      };
+      save_scenario: {
+        Args: {
+          p_company_id: string;
+          p_scenario_id: string;
+          p_scenario_name: string;
+          p_input: Json;
+          p_input_schema_version: number;
+          p_input_hash: string;
+          p_engine_version: string;
+          p_run_status: string;
+          p_output: Json | null;
+          p_output_hash: string | null;
+          p_error_code: string | null;
+          p_error_message: string | null;
+          p_idempotency_key: string;
+          p_request_hash: string;
+          p_prev_event_hash: string | null;
+          p_event_hash: string;
+        };
+        Returns: {
+          scenarioId: string;
+          versionNumber: number;
+          runId: string;
+          runStatus: string;
+        };
       };
     };
     Enums: {

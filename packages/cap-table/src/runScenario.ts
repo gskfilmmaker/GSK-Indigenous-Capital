@@ -4,6 +4,7 @@ import { computeCapSafeOwnership } from "./capSafeOwnership.js";
 import {
   allocateExistingCapitalization,
   type AllocatedHolderRow,
+  type ExistingHolderKey,
 } from "./existingCapitalization.js";
 
 /**
@@ -117,5 +118,58 @@ export function runScenario(scenario: Scenario): ScenarioRunResult {
     safeRows,
     totalCapSafeOwnership: totalSafeOwnership,
     legacyOwnership,
+  };
+}
+
+export interface SerializableScenarioRunResult {
+  engineVersion: string;
+  schemaVersion: number;
+  existingCapitalizationRows: {
+    key: ExistingHolderKey;
+    ownershipBeforeSafes: string;
+    ownershipAfterSafes: string;
+  }[];
+  safeRows: (
+    | { id: string; instrumentType: "post_money_cap"; determinable: true; ownership: string }
+    | { id: string; instrumentType: "discount_only" | "mfn"; determinable: false }
+  )[];
+  totalCapSafeOwnership: string;
+  legacyOwnership: string;
+}
+
+/**
+ * Converts a `ScenarioRunResult` (built from `Decimal` instances) into a
+ * JSON-safe, canonically-hashable shape — the same
+ * Decimal-to-string-then-canonicalize-elsewhere split `result.ts`'s
+ * `serializeCapSafeResult` uses, extended to the full scenario result
+ * (existing-capitalization rows and per-SAFE determinable/ownership
+ * union included, not just the cap-SAFE subset). This is what gets
+ * persisted as `scenario_runs.output` and hashed for `output_hash`
+ * (root CLAUDE.md invariant 3: the persisted record, not a recomputable
+ * approximation of it).
+ */
+export function serializeScenarioRunResult(
+  result: ScenarioRunResult,
+): SerializableScenarioRunResult {
+  return {
+    engineVersion: result.engineVersion,
+    schemaVersion: result.schemaVersion,
+    existingCapitalizationRows: result.existingCapitalizationRows.map((row) => ({
+      key: row.key,
+      ownershipBeforeSafes: row.ownershipBeforeSafes.toString(),
+      ownershipAfterSafes: row.ownershipAfterSafes.toString(),
+    })),
+    safeRows: result.safeRows.map((row) =>
+      row.determinable
+        ? {
+            id: row.id,
+            instrumentType: row.instrumentType,
+            determinable: true as const,
+            ownership: row.ownership.toString(),
+          }
+        : { id: row.id, instrumentType: row.instrumentType, determinable: false as const },
+    ),
+    totalCapSafeOwnership: result.totalCapSafeOwnership.toString(),
+    legacyOwnership: result.legacyOwnership.toString(),
   };
 }

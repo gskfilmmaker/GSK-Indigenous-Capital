@@ -3,75 +3,80 @@
   font-size: 26px;
   font-weight: 500;
   color: var(--gsk-color-ink);
+  margin: 0 0 var(--gsk-space-2);
+}
+
+.subtitle {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink-soft);
   margin: 0 0 var(--gsk-space-6);
 }
 
-.sectionTitle {
+.newLink {
+  display: inline-block;
   font-family: var(--gsk-font-body);
   font-size: 14px;
   font-weight: 500;
-  color: var(--gsk-color-ink-soft);
-  margin: 0 0 var(--gsk-space-3);
+  color: var(--gsk-color-accent-contrast);
+  background: var(--gsk-color-ink);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-2) var(--gsk-space-4);
+  text-decoration: none;
+  margin-bottom: var(--gsk-space-6);
 }
 
-.sectionSpaced {
-  margin-top: var(--gsk-space-6);
+.newLink:hover {
+  opacity: 0.85;
 }
 
-.companyList {
+.list {
   list-style: none;
-  margin: 0 0 var(--gsk-space-6);
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--gsk-space-3);
 }
 
-.companyCard {
+.card {
+  display: block;
   border: 1px solid var(--gsk-color-line);
   border-radius: var(--gsk-radius-sm);
   padding: var(--gsk-space-4);
   background: var(--gsk-color-paper-raised);
+  text-decoration: none;
 }
 
-.companyName {
+.card:hover {
+  border-color: var(--gsk-color-line-strong);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gsk-space-3);
+  margin-bottom: var(--gsk-space-1);
+}
+
+.cardName {
   font-family: var(--gsk-font-body);
   font-size: 15px;
   font-weight: 500;
   color: var(--gsk-color-ink);
-  margin: 0 0 var(--gsk-space-1);
 }
 
-.companyMeta {
+.cardMeta {
   font-family: var(--gsk-font-body);
   font-size: 13px;
   color: var(--gsk-color-ink-faint);
   margin: 0;
 }
 
-.link {
-  display: inline-block;
+.emptyState {
   font-family: var(--gsk-font-body);
   font-size: 14px;
-  color: var(--gsk-color-ink-soft);
-  text-decoration: none;
-  border-bottom: 1px solid var(--gsk-color-line-strong);
-}
-
-.companyCard .link {
-  margin-top: var(--gsk-space-2);
-}
-
-.link:hover {
-  color: var(--gsk-color-ink);
-}
-
-.notice {
-  font-family: var(--gsk-font-body);
-  font-size: 13px;
-  line-height: 1.6;
   color: var(--gsk-color-ink-faint);
-  margin: var(--gsk-space-6) 0 0;
-  padding-top: var(--gsk-space-5);
-  border-top: 1px solid var(--gsk-color-line);
+  margin: 0 0 var(--gsk-space-6);
 }

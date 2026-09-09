@@ -59,6 +59,12 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
                 {INCORPORATION_STATUTE_LABELS[company.incorporation_statute] ??
                   company.incorporation_statute}
               </p>
+              <Link
+                href={`/app/${orgSlug}/companies/${company.id}/scenarios`}
+                className={styles.link}
+              >
+                Scenarios
+              </Link>
             </li>
           ))}
         </ul>
@@ -67,11 +73,6 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
       )}
       <Link href={`/onboarding/${orgSlug}/company`} className={styles.link}>
         Add another company
-      </Link>
-
-      <h2 className={`${styles.sectionTitle} ${styles.sectionSpaced}`}>Model a financing</h2>
-      <Link href="/scenario-studio" className={styles.link}>
-        Open Scenario Studio
       </Link>
 
       <p className={styles.notice}>

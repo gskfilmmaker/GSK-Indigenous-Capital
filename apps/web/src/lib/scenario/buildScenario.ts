@@ -1,5 +1,5 @@
-import type { SafeId } from "@gsk/domain";
-import { percentPointsToFraction } from "./percentInput";
+import type { Scenario, SafeId } from "@gsk/domain";
+import { fractionToPercentPoints, percentPointsToFraction } from "./percentInput";
 
 export type SafeInstrumentType = "post_money_cap" | "discount_only" | "mfn";
 
@@ -81,4 +81,38 @@ function buildSafeInput(row: SafeRowFormState, sequence: number): unknown {
     case "mfn":
       return { ...base, instrumentType: "mfn" };
   }
+}
+
+/**
+ * The inverse of `buildScenarioInput`: rebuilds this page's editable form
+ * state from a previously persisted (and already schema-validated)
+ * `Scenario` — used to hydrate the persisted Scenario Studio route from
+ * the latest `scenario_versions.input` row. Rows come back in `sequence`
+ * order, matching how `buildScenarioInput` derives `sequence` from array
+ * position in the first place.
+ */
+export function hydrateFormStateFromScenario(scenario: Scenario): {
+  existingCapitalization: ExistingCapitalizationFormState;
+  safeRows: SafeRowFormState[];
+} {
+  return {
+    existingCapitalization: {
+      founders: fractionToPercentPoints(scenario.existingCapitalization.founders),
+      grantedOptions: fractionToPercentPoints(scenario.existingCapitalization.grantedOptions),
+      unissuedPool: fractionToPercentPoints(scenario.existingCapitalization.unissuedPool),
+    },
+    safeRows: [...scenario.safes]
+      .sort((a, b) => a.sequence - b.sequence)
+      .map((safe) => ({
+        id: safe.id,
+        investorLabel: safe.investorLabel ?? "",
+        purchaseAmount: safe.purchaseAmount.amount,
+        instrumentType: safe.instrumentType,
+        valuationCap: safe.instrumentType === "post_money_cap" ? safe.valuationCap.amount : "",
+        discountPercent:
+          safe.instrumentType === "discount_only"
+            ? fractionToPercentPoints(safe.discountPercent)
+            : "",
+      })),
+  };
 }
