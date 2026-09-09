@@ -8,10 +8,12 @@ Schema, constraints, RLS policies, `security definer` functions, triggers
 `migrations/` contains seven migrations covering extensions/helpers,
 authz capabilities, organizations/memberships, companies, scenarios/
 versions/runs/snapshots, snapshot share links, and audit/outbox/
-idempotency (spec §9.1, §9.2, §9.5, §9.8, this project's Step 4 scope).
-Every table is RLS-enabled and default-deny from the migration that
-creates it (`docs/adr/0003-supabase-rls-strategy.md`); `tests/` holds a
-50-assertion pgTAP suite proving cross-tenant isolation for every one
+idempotency (spec §9.1, §9.2, §9.5, §9.8, this project's Step 4 scope),
+plus one persistence-phase migration
+(`20260908150700_audit_chain_tip_function.sql`, see below). Every table
+is RLS-enabled and default-deny from the migration that creates it
+(`docs/adr/0003-supabase-rls-strategy.md`); `tests/` holds a
+56-assertion pgTAP suite proving cross-tenant isolation for every one
 of them (spec §25 item 6), plus append-only and hash-chain-integrity
 checks where those apply.
 
@@ -19,24 +21,37 @@ checks where those apply.
 commit `682f808`, by an agent with real network access — this sandbox
 never had one (raw-TCP Postgres connections and the `api.supabase.com`
 management API are both blocked by its egress proxy policy; see the git
-history of this directory for the full diagnosis). All seven migrations
-were verified locally first against a Postgres 16 + pgTAP instance that
-approximates the real project closely enough to catch real bugs (and
-did — see the commit messages for the GRANT and `SELECT ... FOR UPDATE`
-privilege issues found and fixed this way), then applied for real via
-`supabase db push` and confirmed against `supabase migration list` and
-direct spot-queries (table access, `authz.*` function presence).
+history of this directory for the full diagnosis, and
+`20260908150700_audit_chain_tip_function.sql`'s commit for independent
+re-confirmation that `*.supabase.co` itself is also blocked). All seven
+of the original migrations were verified locally first against a
+Postgres 16 + pgTAP instance that approximates the real project closely
+enough to catch real bugs (and did — see the commit messages for the
+GRANT and `SELECT ... FOR UPDATE` privilege issues found and fixed this
+way), then applied for real via `supabase db push` and confirmed against
+`supabase migration list` and direct spot-queries (table access,
+`authz.*` function presence).
+
+**Not yet applied to the real project:**
+`20260908150700_audit_chain_tip_function.sql` (added while building the
+first real command, spec §14/§9.2 company creation — see its own header
+comment for why: an `editor`-role member has `company.write` but not
+`audit.read`, and would otherwise have no way to read the audit chain
+tip needed to append a correctly hash-chained event for their own
+authorized action). Verified locally the same way as the original seven
+(pgTAP: `Files=7, Tests=56, ... Result: PASS`); needs the same
+apply-via-an-agent-with-real-network-access handoff as before.
 
 **Known gap:** the pgTAP suite in `tests/` has been run and passes
-(50/50) against the local approximation harness, but has **not** been
+(56/56) against the local approximation harness, but has **not** been
 run against the real, deployed project — the environment that applied
-the migrations had no Docker available for `supabase test db` (which in
-any case tests a fresh local copy, not the live remote project itself —
-see below). The schema applied is byte-identical to what was locally
-verified, so this is a residual-risk gap, not an unknown: it would only
-surface a difference between this project's real `auth` schema and the
-local stand-in (unlikely, since both are recreations of the same
-Supabase/PostgREST contract, but not zero).
+the first seven migrations had no Docker available for `supabase test
+db` (which in any case tests a fresh local copy, not the live remote
+project itself — see below). The schema applied is byte-identical to
+what was locally verified, so this is a residual-risk gap, not an
+unknown: it would only surface a difference between this project's real
+`auth` schema and the local stand-in (unlikely, since both are
+recreations of the same Supabase/PostgREST contract, but not zero).
 
 ### How to apply (for future migrations)
 
