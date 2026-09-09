@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  createOrganizationInputSchema,
-  organizationSlugSchema,
-  slugify,
-} from "./organization.js";
+import { createOrganizationInputSchema, organizationSlugSchema, slugify } from "./organization.js";
 
 describe("organizationSlugSchema", () => {
   it("accepts lowercase letters, numbers, and single hyphens", () => {

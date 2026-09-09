@@ -1,0 +1,72 @@
+.title {
+  font-family: var(--gsk-font-display);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--gsk-color-ink);
+  margin: 0 0 var(--gsk-space-6);
+}
+
+.sectionTitle {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gsk-color-ink-soft);
+  margin: 0 0 var(--gsk-space-3);
+}
+
+.sectionSpaced {
+  margin-top: var(--gsk-space-6);
+}
+
+.companyList {
+  list-style: none;
+  margin: 0 0 var(--gsk-space-6);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gsk-space-3);
+}
+
+.companyCard {
+  border: 1px solid var(--gsk-color-line);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-4);
+  background: var(--gsk-color-paper-raised);
+}
+
+.companyName {
+  font-family: var(--gsk-font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gsk-color-ink);
+  margin: 0 0 var(--gsk-space-1);
+}
+
+.companyMeta {
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+  color: var(--gsk-color-ink-faint);
+  margin: 0;
+}
+
+.link {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gsk-color-line-strong);
+}
+
+.link:hover {
+  color: var(--gsk-color-ink);
+}
+
+.notice {
+  font-family: var(--gsk-font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gsk-color-ink-faint);
+  margin: var(--gsk-space-6) 0 0;
+  padding-top: var(--gsk-space-5);
+  border-top: 1px solid var(--gsk-color-line);
+}

@@ -44,6 +44,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@gsk/audit':
+        specifier: workspace:*
+        version: link:../../packages/audit
       '@gsk/cap-table':
         specifier: workspace:*
         version: link:../../packages/cap-table

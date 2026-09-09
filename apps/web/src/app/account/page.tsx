@@ -1,22 +1,14 @@
-import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { signOutAction } from "../(auth)/actions";
 import { createClient } from "../../lib/supabase/server";
-import styles from "./account.module.css";
-
-export const metadata: Metadata = {
-  title: "Account — GSK Indigenous Capital",
-};
 
 /**
- * Minimal authenticated placeholder proving the sign-in → session →
- * RLS-scoped-request loop works end to end. Task #42 (authenticated app
- * shell + org onboarding) replaces this with the real app shell — this
- * page intentionally does nothing beyond that verification.
- *
- * `getUser()`, not `getSession()`: it re-validates the JWT against
- * Supabase Auth on every call rather than trusting a possibly-stale
- * cookie, which matters on a page that gates access.
+ * A neutral post-sign-in landing route (this is where actions.ts's
+ * signInAction/signUpAction/etc. redirect to) that hands off to
+ * /onboarding, which already knows how to route a signed-in user to the
+ * right next step: create an organization, add a company, or — once
+ * both exist — straight to /app/:orgSlug/dashboard. Never rendered
+ * itself; existing only so the auth actions have one stable redirect
+ * target that doesn't need to know the user's organization state.
  */
 export default async function AccountPage() {
   const supabase = await createClient();
@@ -28,15 +20,5 @@ export default async function AccountPage() {
     redirect("/login");
   }
 
-  return (
-    <main className={styles.page}>
-      <h1 className={styles.title}>Signed in</h1>
-      <p className={styles.email}>{user.email}</p>
-      <form action={signOutAction}>
-        <button type="submit" className={styles.signOut}>
-          Sign out
-        </button>
-      </form>
-    </main>
-  );
+  redirect("/onboarding");
 }

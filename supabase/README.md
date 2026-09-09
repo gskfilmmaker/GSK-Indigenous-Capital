@@ -34,6 +34,7 @@ way), then applied for real via `supabase db push` and confirmed against
 `authz.*` function presence).
 
 **Not yet applied to the real project:**
+
 - `20260908150700_audit_chain_tip_function.sql` — see its own header
   comment: an `editor`-role member has `company.write` but not
   `audit.read`, and would otherwise have no way to read the audit chain

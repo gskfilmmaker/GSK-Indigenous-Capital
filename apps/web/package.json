@@ -12,6 +12,7 @@
     "clean": "rm -rf .next dist"
   },
   "dependencies": {
+    "@gsk/audit": "workspace:*",
     "@gsk/cap-table": "workspace:*",
     "@gsk/db": "workspace:*",
     "@gsk/domain": "workspace:*",

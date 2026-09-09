@@ -1,0 +1,69 @@
+.shell {
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gsk-space-4);
+  padding: var(--gsk-space-4) var(--gsk-space-5);
+  border-bottom: 1px solid var(--gsk-color-line);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gsk-space-3);
+}
+
+.wordmark {
+  font-family: var(--gsk-font-display);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gsk-color-ink);
+  text-decoration: none;
+}
+
+.orgName {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink-soft);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--gsk-space-4);
+}
+
+.headerLink {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink-soft);
+  text-decoration: none;
+}
+
+.headerLink:hover {
+  color: var(--gsk-color-ink);
+}
+
+.signOut {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink-soft);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.signOut:hover {
+  color: var(--gsk-color-ink);
+}
+
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--gsk-space-6) var(--gsk-space-5) var(--gsk-space-8);
+}

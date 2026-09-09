@@ -4,7 +4,7 @@
  * This project's sandbox has no network access to the Supabase Management
  * API, so `supabase gen types typescript --project-id ...` cannot run here.
  * This file is written by hand to match `supabase/migrations/*.sql`
- * exactly (schema as of 20260908150600_audit_outbox_idempotency.sql) in
+ * exactly (schema as of 20260908150800_create_company_command.sql) in
  * the same shape the real CLI would produce, so it is a drop-in
  * replacement once Management API access exists — regenerate with:
  *
@@ -634,6 +634,24 @@ export interface Database {
           p_raw_token: string;
         };
         Returns: Database["public"]["Tables"]["scenario_snapshots"]["Row"];
+      };
+      get_last_audit_event_hash: {
+        Args: {
+          p_organization_id: string;
+        };
+        Returns: string | null;
+      };
+      create_company: {
+        Args: {
+          p_organization_id: string;
+          p_company_id: string;
+          p_company: Json;
+          p_idempotency_key: string;
+          p_request_hash: string;
+          p_prev_event_hash: string | null;
+          p_event_hash: string;
+        };
+        Returns: Database["public"]["Tables"]["companies"]["Row"];
       };
     };
     Enums: {
