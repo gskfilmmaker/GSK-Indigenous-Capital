@@ -1,10 +1,21 @@
 /**
  * Supabase clients, generated types, and SQL helpers (spec §13.2, §15).
  *
- * Step 1 placeholder. Supabase Auth/Postgres/Storage wiring, tenancy,
- * default-deny RLS, and generated database types are built starting in
- * Step 4, alongside the pgTAP cross-tenant tests in supabase/tests, which
- * must be written before the application CRUD they protect.
+ * Every factory here takes its Supabase URL/key (and, for the server
+ * client, a cookie adapter) as explicit arguments rather than reading
+ * `process.env`/`next/headers` internally — see each factory's own
+ * comment for why. Callers in apps/web read their environment variables
+ * and pass them in.
  */
 
-export const DB_PACKAGE_PLACEHOLDER = true;
+export type { Database, Json } from "./generated/database.types.js";
+export { createSupabaseBrowserClient, type SupabaseBrowserClient } from "./browserClient.js";
+export {
+  createSupabaseServerClient,
+  type SupabaseServerClient,
+  type CookieMethodsServer,
+} from "./serverClient.js";
+export {
+  createSupabaseServiceRoleClient,
+  type SupabaseServiceRoleClient,
+} from "./serviceRoleClient.js";

@@ -11,7 +11,10 @@
     "test": "vitest run",
     "clean": "rm -rf dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0"
+  },
   "devDependencies": {
     "typescript": "^5.7.2",
     "vitest": "^2.1.5"
