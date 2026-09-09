@@ -17,10 +17,27 @@ export type ScenarioId = z.infer<typeof scenarioIdSchema>;
 export const safeIdSchema = uuidSchema.brand<"SafeId">();
 export type SafeId = z.infer<typeof safeIdSchema>;
 
+export const organizationIdSchema = uuidSchema.brand<"OrganizationId">();
+export type OrganizationId = z.infer<typeof organizationIdSchema>;
+
+export const companyIdSchema = uuidSchema.brand<"CompanyId">();
+export type CompanyId = z.infer<typeof companyIdSchema>;
+
 export function newScenarioId(): ScenarioId {
   return scenarioIdSchema.parse(uuidv7());
 }
 
 export function newSafeId(): SafeId {
   return safeIdSchema.parse(uuidv7());
+}
+
+/**
+ * Generated client-side (unlike most other ids in this project, which
+ * the database assigns via its own `uuidv7()` default): the
+ * create_company command needs the company's id *before* calling the
+ * database, to compute the audit event hash that describes it (ADR
+ * 0006) — see supabase/migrations/20260908150800_create_company_command.sql.
+ */
+export function newCompanyId(): CompanyId {
+  return companyIdSchema.parse(uuidv7());
 }

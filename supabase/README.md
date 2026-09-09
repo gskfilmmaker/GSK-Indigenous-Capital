@@ -9,11 +9,12 @@ Schema, constraints, RLS policies, `security definer` functions, triggers
 authz capabilities, organizations/memberships, companies, scenarios/
 versions/runs/snapshots, snapshot share links, and audit/outbox/
 idempotency (spec §9.1, §9.2, §9.5, §9.8, this project's Step 4 scope),
-plus one persistence-phase migration
-(`20260908150700_audit_chain_tip_function.sql`, see below). Every table
+plus two persistence-phase migrations
+(`20260908150700_audit_chain_tip_function.sql` and
+`20260908150800_create_company_command.sql`, see below). Every table
 is RLS-enabled and default-deny from the migration that creates it
 (`docs/adr/0003-supabase-rls-strategy.md`); `tests/` holds a
-56-assertion pgTAP suite proving cross-tenant isolation for every one
+67-assertion pgTAP suite proving cross-tenant isolation for every one
 of them (spec §25 item 6), plus append-only and hash-chain-integrity
 checks where those apply.
 
@@ -33,17 +34,26 @@ way), then applied for real via `supabase db push` and confirmed against
 `authz.*` function presence).
 
 **Not yet applied to the real project:**
-`20260908150700_audit_chain_tip_function.sql` (added while building the
-first real command, spec §14/§9.2 company creation — see its own header
-comment for why: an `editor`-role member has `company.write` but not
-`audit.read`, and would otherwise have no way to read the audit chain
-tip needed to append a correctly hash-chained event for their own
-authorized action). Verified locally the same way as the original seven
-(pgTAP: `Files=7, Tests=56, ... Result: PASS`); needs the same
+- `20260908150700_audit_chain_tip_function.sql` — see its own header
+  comment: an `editor`-role member has `company.write` but not
+  `audit.read`, and would otherwise have no way to read the audit chain
+  tip needed to append a correctly hash-chained event for their own
+  authorized action.
+- `20260908150800_create_company_command.sql` — the first real command
+  (root CLAUDE.md invariant 5 in full: authorization, validation,
+  idempotency, audit, atomic outbox) for company creation during
+  onboarding. `security invoker`, so every internal statement is still
+  subject to the caller's own RLS exactly as if issued directly — see
+  its own header comment, including the documented, deliberate decision
+  not to retrofit `create_organization()` the same way (idempotency
+  doesn't fit its structure, and it is already live in production).
+
+Both verified locally the same way as the original seven (pgTAP:
+`Files=8, Tests=67, ... Result: PASS`); need the same
 apply-via-an-agent-with-real-network-access handoff as before.
 
 **Known gap:** the pgTAP suite in `tests/` has been run and passes
-(56/56) against the local approximation harness, but has **not** been
+(67/67) against the local approximation harness, but has **not** been
 run against the real, deployed project — the environment that applied
 the first seven migrations had no Docker available for `supabase test
 db` (which in any case tests a fresh local copy, not the live remote
