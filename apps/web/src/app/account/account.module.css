@@ -1,0 +1,35 @@
+.page {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--gsk-space-8) var(--gsk-space-5);
+}
+
+.title {
+  font-family: var(--gsk-font-display);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--gsk-color-ink);
+  margin: 0 0 var(--gsk-space-2);
+}
+
+.email {
+  font-family: var(--gsk-font-body);
+  font-size: 15px;
+  color: var(--gsk-color-ink-soft);
+  margin: 0 0 var(--gsk-space-6);
+}
+
+.signOut {
+  font-family: var(--gsk-font-body);
+  font-size: 14px;
+  color: var(--gsk-color-ink);
+  background: var(--gsk-color-paper-raised);
+  border: 1px solid var(--gsk-color-line-strong);
+  border-radius: var(--gsk-radius-sm);
+  padding: var(--gsk-space-2) var(--gsk-space-4);
+  cursor: pointer;
+}
+
+.signOut:hover {
+  border-color: var(--gsk-color-ink);
+}

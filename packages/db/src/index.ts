@@ -9,6 +9,7 @@
  */
 
 export type { Database, Json } from "./generated/database.types.js";
+export type { EmailOtpType, AuthError } from "@supabase/supabase-js";
 export { createSupabaseBrowserClient, type SupabaseBrowserClient } from "./browserClient.js";
 export {
   createSupabaseServerClient,

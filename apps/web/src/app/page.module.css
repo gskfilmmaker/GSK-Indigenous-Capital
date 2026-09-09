@@ -20,6 +20,12 @@
   text-decoration: none;
 }
 
+.headerNav {
+  display: flex;
+  align-items: center;
+  gap: var(--gsk-space-4);
+}
+
 .headerLink {
   font-family: var(--gsk-font-body);
   font-size: 14px;

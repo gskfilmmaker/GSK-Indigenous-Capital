@@ -38,9 +38,14 @@ export default function HomePage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <span className={styles.wordmark}>GSK Indigenous Capital — SAFE Studio</span>
-        <Link href="/scenario-studio" className={styles.headerLink}>
-          Open Scenario Studio
-        </Link>
+        <nav className={styles.headerNav} aria-label="Account">
+          <Link href="/scenario-studio" className={styles.headerLink}>
+            Open Scenario Studio
+          </Link>
+          <Link href="/login" className={styles.headerLink}>
+            Sign in
+          </Link>
+        </nav>
       </header>
 
       <section className={styles.hero}>
