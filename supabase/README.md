@@ -53,10 +53,28 @@ way), then applied for real via `supabase db push` and confirmed against
   saving a Scenario Studio scenario: one call creates the scenario and
   its first version, or appends a new version to an existing one, plus
   its engine run, atomically.
+- `20260908151000_qualify_pgcrypto_calls.sql` — **urgent, fixes a live
+  production bug**, found during the first real onboarding test:
+  `create_organization()` failed with `function gen_random_bytes(integer)
+  does not exist`. Root cause: on the real Supabase project, `pgcrypto`
+  installs into an `extensions` schema, not `public`; `public.uuidv7()`
+  (the default for every table's `id` column) and the two
+  snapshot-share-link functions call `gen_random_bytes`/`digest`
+  unqualified, which fails once invoked from inside anything running
+  under `set search_path = public, pg_temp` (ADR 0003) — i.e. any insert
+  made from `create_organization`, `create_company`, `save_scenario`,
+  `create_snapshot_share_link`, or `get_snapshot_by_share_token`, not
+  just organization creation. Fixed via `create or replace function`
+  (same objects, existing grants preserved), qualifying every pgcrypto
+  call as `extensions.<fn>`. This also uncovered a matching gap in the
+  local verification harness (see below) that had been silently masking
+  this whole bug class — fixed alongside it.
 
-All three verified locally the same way as the original seven (pgTAP:
-`Files=9, Tests=79, ... Result: PASS`); need the same
-apply-via-an-agent-with-real-network-access handoff as before.
+All four verified locally the same way as the original seven (pgTAP:
+`Files=9, Tests=79, ... Result: PASS`, re-confirmed after this fix);
+need the same apply-via-an-agent-with-real-network-access handoff as
+before — this one is time-sensitive since it blocks all onboarding on
+the live site.
 
 **Known gap:** the pgTAP suite in `tests/` has been run and passes
 (79/79) against the local approximation harness, but has **not** been
@@ -129,6 +147,18 @@ populates from the request JWT. `supabase/tests/00_setup.sql` adds
 rest of a psql session "as" a given user — safe to run against a real
 Supabase stack too, since it only wraps that same session-setting
 mechanism.
+
+Installs `pgcrypto` into a dedicated `extensions` schema (with `usage`
+granted to `anon`/`authenticated`/`service_role`), matching the real
+Supabase project's own layout, rather than the `public`-schema default
+a bare `create extension pgcrypto;` would give on a self-managed
+Postgres instance. This distinction is exactly what let the
+`20260908151000_qualify_pgcrypto_calls.sql` bug reach production
+undetected: before this fix, the harness put `pgcrypto` in `public`,
+which happened to still be inside the restricted
+`search_path = public, pg_temp` privileged functions run under (ADR
+0003), so unqualified `gen_random_bytes`/`digest` calls resolved fine
+here even though they couldn't on the real project.
 
 To rebuild and test locally:
 

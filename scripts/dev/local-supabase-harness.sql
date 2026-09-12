@@ -4,7 +4,18 @@
 -- same session-local setting PostgREST populates from the request JWT.
 -- This file is dev/test tooling only — it is never applied to the real
 -- Supabase project (which already provides all of this natively).
-create extension if not exists pgcrypto;
+-- Real Supabase projects install pgcrypto (and most other extensions)
+-- into a dedicated `extensions` schema, not `public` — a bare
+-- `create extension pgcrypto;` on a self-managed Postgres instead
+-- defaults to `public`, which is exactly why a real bug (every
+-- `security definer`/`security invoker` function's `set search_path =
+-- public, pg_temp` hid pgcrypto from unqualified calls on the real
+-- project) went undetected here until it was found in production — see
+-- 20260908151000_qualify_pgcrypto_calls.sql. Matching the real schema
+-- layout here closes that gap for every migration going forward.
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+grant usage on schema extensions to anon, authenticated, service_role;
 create extension if not exists pgtap;
 
 do $$

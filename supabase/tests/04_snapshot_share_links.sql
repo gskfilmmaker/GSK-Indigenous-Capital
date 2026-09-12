@@ -54,7 +54,7 @@ select is(
 -- Revocation: Alice revokes her link, then anon resolution fails.
 select auth.set_test_session('40000000-0000-0000-0000-000000000001');
 update public.snapshot_share_links set revoked_at = now(), revoked_by = auth.uid()
-  where token_hash = encode(digest(:'alice_token', 'sha256'), 'hex');
+  where token_hash = encode(extensions.digest(:'alice_token', 'sha256'), 'hex');
 
 select auth.set_test_session(null, 'anon');
 select throws_ok(
@@ -66,7 +66,7 @@ select throws_ok(
 -- Tamper guard: token_hash cannot be changed directly via UPDATE.
 select auth.set_test_session('40000000-0000-0000-0000-000000000001');
 select throws_ok(
-  $sql$update public.snapshot_share_links set token_hash = 'tampered' where token_hash = encode(digest('nonexistent', 'sha256'), 'hex') or true$sql$,
+  $sql$update public.snapshot_share_links set token_hash = 'tampered' where token_hash = encode(extensions.digest('nonexistent', 'sha256'), 'hex') or true$sql$,
   'snapshot_share_links: only revoked_at/revoked_by may change after creation',
   'directly changing token_hash via UPDATE is rejected'
 );
