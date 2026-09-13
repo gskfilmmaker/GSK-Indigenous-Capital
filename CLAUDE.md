@@ -42,6 +42,7 @@ apps/web                 Next.js App Router application
 apps/worker               Durable background jobs (Inngest)
 packages/domain            Entities, branded IDs, Zod command/scenario schemas
 packages/cap-table         Pure deterministic engine and fixtures — see packages/cap-table/CLAUDE.md
+packages/deal-screening    Investor evaluation formulas (VC Method, Scorecard, Berkus, unit economics, red flags) — see packages/deal-screening/CLAUDE.md; never renders a verdict
 packages/db                Supabase clients, generated types, SQL helpers
 packages/authz             Capabilities and authorization helpers
 packages/documents         Template schemas and DOCX/PDF renderers — see packages/documents/CLAUDE.md

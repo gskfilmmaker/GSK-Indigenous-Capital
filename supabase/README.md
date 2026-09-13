@@ -74,6 +74,34 @@ no partial write, succeeded cleanly on retry). This closes out the
 persistence-phase verification loop end-to-end, not just against the
 local harness.
 
+**Not yet applied to the real project — three new deal-screening
+migrations:**
+
+- `20260913100000_deal_screening_schema.sql` — `investor_theses`,
+  `startup_intakes`, and `screening_snapshots` (the latter append-only,
+  root CLAUDE.md invariant 3, with a check constraint that rejects a
+  `verdict`/`score`/`overallScore`/`recommendation`/`rating` key in its
+  `output` column — a second, database-level enforcement of
+  `packages/deal-screening/CLAUDE.md`'s lead rule that this feature
+  never renders a verdict, on top of the application-layer discipline).
+- `20260913100100_run_screening_command.sql` — freezes one
+  `packages/deal-screening` engine run as an immutable snapshot,
+  atomically alongside idempotency/audit/outbox (root CLAUDE.md
+  invariant 5), mirroring `save_scenario()`.
+- `20260913100200_thesis_and_intake_commands.sql` —
+  `create_investor_thesis()` and `create_startup_intake()`, the same
+  idempotency/audit/outbox treatment for the two mutations upstream of a
+  screening run, mirroring `create_company()`.
+
+Verified locally the same way as every prior migration (pgTAP:
+`Files=10, Tests=91, ... Result: PASS`); needs the same
+apply-via-an-agent-with-real-network-access handoff as before. See ADR
+0008 and ADR 0009 for the two open policy questions (AI-extraction
+vendor/data-residency, document retention) that gate the *next* phase
+of this feature (founder document upload + AI extraction) — the schema
+and commands above don't depend on either answer and are safe to apply
+now.
+
 ### How to apply (for future migrations)
 
 From the repo root, with the Supabase CLI available (already a

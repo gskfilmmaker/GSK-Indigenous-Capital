@@ -22,12 +22,12 @@ export interface RedFlag {
 
 export interface RedFlagInput {
   /** Two co-founders each holding ~50%, with no unvested shares remaining. */
-  capTableEvenSplitFullyVested?: boolean;
-  monthlyChurnRate?: EngineDecimalType;
+  capTableEvenSplitFullyVested?: boolean | undefined;
+  monthlyChurnRate?: EngineDecimalType | undefined;
   /** Whether the founder has disclosed cohort-level retention, not just a blended figure. */
-  cohortRetentionDisclosed?: boolean;
-  marketSizingGapPercent?: EngineDecimalType;
-  ltvToCacRatio?: EngineDecimalType;
+  cohortRetentionDisclosed?: boolean | undefined;
+  marketSizingGapPercent?: EngineDecimalType | undefined;
+  ltvToCacRatio?: EngineDecimalType | undefined;
 }
 
 const fivePercent = new EngineDecimal("0.05");

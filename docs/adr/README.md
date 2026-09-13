@@ -9,6 +9,8 @@
 | [0005](./0005-document-renderer.md)              | Document rendering pipeline                          | Accepted (development default); template source out of scope |
 | [0006](./0006-audit-anchoring.md)                | Audit event hash-chaining and anchoring              | Accepted (development default)                               |
 | [0007](./0007-canadian-region-hosting-policy.md) | Canadian-region hosting and subprocessor policy      | Proposed default, pending owner decision (spec §26 item 11)  |
+| [0008](./0008-ai-document-extraction-provider.md) | AI document-extraction provider for deal screening   | Proposed default, pending owner decision (new subprocessor)  |
+| [0009](./0009-deal-screening-document-retention.md) | Deal-screening document upload and retention policy  | Proposed default, pending owner decision (spec §26)          |
 
 None of these ADRs constitute final legal, security, or product sign-off.
 See spec §26 for the full list of decisions requiring owner/counsel

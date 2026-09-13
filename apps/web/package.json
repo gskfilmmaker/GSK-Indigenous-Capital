@@ -15,6 +15,7 @@
     "@gsk/audit": "workspace:*",
     "@gsk/cap-table": "workspace:*",
     "@gsk/db": "workspace:*",
+    "@gsk/deal-screening": "workspace:*",
     "@gsk/domain": "workspace:*",
     "@gsk/ui": "workspace:*",
     "decimal.js": "^10.4.3",

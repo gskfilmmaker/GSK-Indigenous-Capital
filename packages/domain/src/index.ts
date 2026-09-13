@@ -13,3 +13,5 @@ export * from "./money.js";
 export * from "./scenario.js";
 export * from "./organization.js";
 export * from "./company.js";
+export * from "./investorThesis.js";
+export * from "./startupIntake.js";

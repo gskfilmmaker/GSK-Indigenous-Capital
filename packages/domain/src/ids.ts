@@ -23,6 +23,15 @@ export type OrganizationId = z.infer<typeof organizationIdSchema>;
 export const companyIdSchema = uuidSchema.brand<"CompanyId">();
 export type CompanyId = z.infer<typeof companyIdSchema>;
 
+export const investorThesisIdSchema = uuidSchema.brand<"InvestorThesisId">();
+export type InvestorThesisId = z.infer<typeof investorThesisIdSchema>;
+
+export const startupIntakeIdSchema = uuidSchema.brand<"StartupIntakeId">();
+export type StartupIntakeId = z.infer<typeof startupIntakeIdSchema>;
+
+export const screeningSnapshotIdSchema = uuidSchema.brand<"ScreeningSnapshotId">();
+export type ScreeningSnapshotId = z.infer<typeof screeningSnapshotIdSchema>;
+
 export function newScenarioId(): ScenarioId {
   return scenarioIdSchema.parse(uuidv7());
 }
@@ -40,4 +49,23 @@ export function newSafeId(): SafeId {
  */
 export function newCompanyId(): CompanyId {
   return companyIdSchema.parse(uuidv7());
+}
+
+/**
+ * Generated client-side, same reasoning as `newScenarioId()`: the
+ * run_screening command needs the snapshot's id before calling the
+ * database, to compute the audit event hash that describes it.
+ */
+export function newScreeningSnapshotId(): ScreeningSnapshotId {
+  return screeningSnapshotIdSchema.parse(uuidv7());
+}
+
+/** Generated client-side, same reasoning as `newCompanyId()`. */
+export function newInvestorThesisId(): InvestorThesisId {
+  return investorThesisIdSchema.parse(uuidv7());
+}
+
+/** Generated client-side, same reasoning as `newCompanyId()`. */
+export function newStartupIntakeId(): StartupIntakeId {
+  return startupIntakeIdSchema.parse(uuidv7());
 }

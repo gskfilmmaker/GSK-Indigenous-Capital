@@ -4,7 +4,7 @@
  * This project's sandbox has no network access to the Supabase Management
  * API, so `supabase gen types typescript --project-id ...` cannot run here.
  * This file is written by hand to match `supabase/migrations/*.sql`
- * exactly (schema as of 20260908150900_save_scenario_command.sql) in
+ * exactly (schema as of 20260913100100_run_screening_command.sql) in
  * the same shape the real CLI would produce, so it is a drop-in
  * replacement once Management API access exists — regenerate with:
  *
@@ -394,6 +394,145 @@ export interface Database {
           },
         ];
       };
+      investor_theses: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          criteria: Json;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          criteria?: Json;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          name?: string;
+          criteria?: Json;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "investor_theses_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      startup_intakes: {
+        Row: {
+          id: string;
+          organization_id: string;
+          company_name: string;
+          industry: string;
+          stage: string;
+          intake_data: Json;
+          status: string;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          company_name: string;
+          industry: string;
+          stage: string;
+          intake_data?: Json;
+          status?: string;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          company_name?: string;
+          industry?: string;
+          stage?: string;
+          intake_data?: Json;
+          status?: string;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "startup_intakes_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      screening_snapshots: {
+        Row: {
+          id: string;
+          startup_intake_id: string;
+          investor_thesis_id: string | null;
+          input: Json;
+          output: Json;
+          engine_version: string;
+          input_hash: string;
+          output_hash: string;
+          computed_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          startup_intake_id: string;
+          investor_thesis_id?: string | null;
+          input: Json;
+          output: Json;
+          engine_version: string;
+          input_hash: string;
+          output_hash: string;
+          computed_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          startup_intake_id?: string;
+          investor_thesis_id?: string | null;
+          input?: Json;
+          output?: Json;
+          engine_version?: string;
+          input_hash?: string;
+          output_hash?: string;
+          computed_by?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "screening_snapshots_startup_intake_id_fkey";
+            columns: ["startup_intake_id"];
+            isOneToOne: false;
+            referencedRelation: "startup_intakes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "screening_snapshots_investor_thesis_id_fkey";
+            columns: ["investor_thesis_id"];
+            isOneToOne: false;
+            referencedRelation: "investor_theses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       snapshot_share_links: {
         Row: {
           id: string;
@@ -678,6 +817,47 @@ export interface Database {
           runId: string;
           runStatus: string;
         };
+      };
+      create_investor_thesis: {
+        Args: {
+          p_organization_id: string;
+          p_thesis_id: string;
+          p_thesis: Json;
+          p_idempotency_key: string;
+          p_request_hash: string;
+          p_prev_event_hash: string | null;
+          p_event_hash: string;
+        };
+        Returns: Database["public"]["Tables"]["investor_theses"]["Row"];
+      };
+      create_startup_intake: {
+        Args: {
+          p_organization_id: string;
+          p_intake_id: string;
+          p_intake: Json;
+          p_idempotency_key: string;
+          p_request_hash: string;
+          p_prev_event_hash: string | null;
+          p_event_hash: string;
+        };
+        Returns: Database["public"]["Tables"]["startup_intakes"]["Row"];
+      };
+      run_screening: {
+        Args: {
+          p_startup_intake_id: string;
+          p_investor_thesis_id: string | null;
+          p_snapshot_id: string;
+          p_input: Json;
+          p_output: Json;
+          p_engine_version: string;
+          p_input_hash: string;
+          p_output_hash: string;
+          p_idempotency_key: string;
+          p_request_hash: string;
+          p_prev_event_hash: string | null;
+          p_event_hash: string;
+        };
+        Returns: Database["public"]["Tables"]["screening_snapshots"]["Row"];
       };
     };
     Enums: {

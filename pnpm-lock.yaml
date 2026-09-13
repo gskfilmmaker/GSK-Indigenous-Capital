@@ -53,6 +53,9 @@ importers:
       '@gsk/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@gsk/deal-screening':
+        specifier: workspace:*
+        version: link:../../packages/deal-screening
       '@gsk/domain':
         specifier: workspace:*
         version: link:../../packages/domain
