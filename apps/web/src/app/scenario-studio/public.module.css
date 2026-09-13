@@ -1,0 +1,14 @@
+.header {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--gsk-space-6) var(--gsk-space-5) 0;
+}
+
+.wordmark {
+  display: inline-block;
+  font-family: var(--gsk-font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gsk-color-ink);
+  text-decoration: none;
+}
