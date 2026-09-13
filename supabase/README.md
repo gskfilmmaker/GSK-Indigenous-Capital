@@ -74,7 +74,7 @@ no partial write, succeeded cleanly on retry). This closes out the
 persistence-phase verification loop end-to-end, not just against the
 local harness.
 
-**Not yet applied to the real project — three new deal-screening
+**Not yet applied to the real project — four new deal-screening
 migrations:**
 
 - `20260913100000_deal_screening_schema.sql` — `investor_theses`,
@@ -92,6 +92,11 @@ migrations:**
   `create_investor_thesis()` and `create_startup_intake()`, the same
   idempotency/audit/outbox treatment for the two mutations upstream of a
   screening run, mirroring `create_company()`.
+- `20260913100300_investor_theses_fund_context.sql` — fixes a real gap
+  found while building the deal-screening UI: `create_investor_thesis()`
+  was silently dropping `fundContext` (the VC Method's fund size/target
+  return/hold years) since `investor_theses` had no column for it. Adds
+  `fund_context jsonb` and updates the function to store it.
 
 Verified locally the same way as every prior migration (pgTAP:
 `Files=10, Tests=91, ... Result: PASS`); needs the same

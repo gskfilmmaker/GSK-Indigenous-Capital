@@ -400,6 +400,7 @@ export interface Database {
           organization_id: string;
           name: string;
           criteria: Json;
+          fund_context: Json | null;
           created_by: string | null;
           created_at: string;
           updated_at: string;
@@ -409,6 +410,7 @@ export interface Database {
           organization_id: string;
           name: string;
           criteria?: Json;
+          fund_context?: Json | null;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -418,6 +420,7 @@ export interface Database {
           organization_id?: string;
           name?: string;
           criteria?: Json;
+          fund_context?: Json | null;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;

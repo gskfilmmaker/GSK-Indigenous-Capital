@@ -54,6 +54,9 @@ export default async function AppShellLayout({
           <Link href="/scenario-studio" className={styles.headerLink}>
             Scenario Studio
           </Link>
+          <Link href={`/app/${organization.slug}/screening`} className={styles.headerLink}>
+            Deal Screening
+          </Link>
           <form action={signOutAction}>
             <button type="submit" className={styles.signOut}>
               Sign out
